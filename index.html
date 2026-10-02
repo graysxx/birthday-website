@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Happy Birthday</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="glow a"></div>
+  <div class="glow b"></div>
+  <main class="card">
+    <div class="top"><span>A birthday notes</span></div>
+    <section class="hero">
+      <p class="for">For <span data-name></span></p>
+      <h1 id="title" aria-label="Happy Birthday.">
+        <span class="l1" data-text="Happy"></span>
+        <span class="l2" data-text="Birthday."></span>
+      </h1>
+      <div class="age" aria-label="Turning age">
+        <span class="age-label">Turning</span>
+        <span class="age-box"><span data-age-count>0</span></span>
+        <span class="age-plus">+1</span>
+      </div>
+      <p class="lead"><span>Happy birthday, <span data-name></span>! Another year older, and I hope it brings you softer days, more warmth, and all the good things you deserve. I hope you learn to love yourself a little more, make peace with the things you can’t change, and find comfort in where you are right now. Hope everything you’ve been wishing for slowly finds its way to you. You deserve all of it.</span></p>
+      <button class="btn" id="open">Open Message <i>→</i></button>
+    </section>
+    <div class="bottom">· From <span data-from></span></div>
+  </main>
+
+  <!-- Popup Messages -->
+  <div class="overlay" id="msgOverlay" role="dialog" aria-modal="true" aria-labelledby="mtitle">
+    <div class="modal">
+      <button class="close" data-close aria-label="Tutup">×</button>
+      <p class="small">About You,</p>
+      <h2 id="mtitle">feel like home...</h2>
+      <hr>
+      <p class="text">Somehow, you made my life feel a little more colorful just by being in it. Your presence became a kind of comfort I never knew I needed, and somewhere along the way, you became my safe place, my home.
+Thank you for being here, for being you, and for making even the simplest moments feel special. I hope you always know how much you mean to me.</p>
+      <p class="sign">just a little something from me.</p>
+      <button class="btn" id="toCraving">One More <i>→</i></button>
+    </div>
+  </div>
+
+  <!-- Category -->
+  <div class="overlay" id="cravOverlay" role="dialog" aria-modal="true" aria-labelledby="ctitle">
+    <div class="modal">
+      <button class="close" data-close aria-label="Tutup">×</button>
+      <button class="back" id="back" hidden aria-label="Kembali">←</button>
+      <p class="small" id="cSmall">Birthday treat</p>
+      <h2 id="ctitle">What are you craving?</h2>
+      <hr>
+      <p class="text" id="cText">Pick one, it’s on me</p>
+      <!-- Category -->
+      <div class="cats" id="cats"></div>
+      <!-- Submenu -->
+      <div id="sub" hidden>
+        <div class="chips" id="chips"></div>
+        <input class="custom" id="custom" type="text" maxlength="80" placeholder="Write what you want..." hidden>
+        <button class="btn" id="send" disabled>Yes, I want this!<i>→</i></button>
+        <p class="hint" id="hint">Please select one first.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Thanks -->
+  <div class="overlay" id="thanksOverlay" role="dialog" aria-modal="true" aria-labelledby="ttitle">
+    <div class="modal">
+      <button class="close" data-close aria-label="Tutup">×</button>
+      <p class="small">All set</p>
+      <h2 id="ttitle">Thank you!</h2>
+      <hr>
+      <p class="text">Your wish has been sent.<br><b id="thanksWish"></b></p>
+      <p class="sign">enjoy your day.</p>
+      <button class="btn" data-close>Close <i>✓</i></button>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/menu.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
