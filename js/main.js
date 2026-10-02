@@ -18,8 +18,7 @@ async function runAge() {
     return;
   }
 
-  await wait(1600);                    
-  agePlus.classList.add('show');   
+  agePlus.classList.add('show');  
   await wait(450);
 
   const dur = Math.min(3600, 1400 + AGE * 50);
@@ -44,14 +43,12 @@ async function runAge() {
 
   ageBox.classList.add('done');      
   await wait(500);
-  agePlus.classList.remove('show');   
+  agePlus.classList.remove('show');    
   await wait(380);
-  agePlus.textContent = FINAL_TEXT;  
+  agePlus.textContent = FINAL_TEXT;    
   agePlus.classList.add('done');
   agePlus.classList.add('show');
 }
-runAge();
-
 // Animation
 let delay = 0;
 document.querySelectorAll('#title [data-text]').forEach(line => {
@@ -76,95 +73,33 @@ const hideAll = () => {
   overlays.forEach(hide);
   document.body.classList.remove('lock');
   document.getElementById('open').focus({ preventScroll: true });
-  setTimeout(showCats, 400);
+  setTimeout(resetWish, 400);
 };
 
 document.getElementById('open').onclick = () => show(msg);
-document.getElementById('toCraving').onclick = () => { hide(msg); showCats(); show(crav); };
+document.getElementById('toCraving').onclick = () => { hide(msg); resetWish(); show(crav); };
 document.querySelectorAll('[data-close]').forEach(b => b.onclick = hideAll);
 overlays.forEach(o => o.addEventListener('click', e => { if (e.target === o) hideAll(); }));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') hideAll(); });
 
-// Menu
+// Wish 
 const $ = id => document.getElementById(id);
-const catsEl = $('cats'), subEl = $('sub'), chipsEl = $('chips');
 const customEl = $('custom'), sendBtn = $('send'), hint = $('hint');
-const backBtn = $('back'), cSmall = $('cSmall'), cTitle = $('ctitle'), cText = $('cText');
+const HINT_DEFAULT = 'Write what you want.';
 
-const HEAD = { small: cSmall.textContent, title: cTitle.textContent, text: cText.textContent };
-let category = null;   // Cat object from MENU
-let picked = null;     // Item
-
-const animate = el => { el.classList.remove('view-in'); void el.offsetWidth; el.classList.add('view-in'); };
-
-// Cat Menu
-MENU.forEach(cat => {
-  const b = document.createElement('button');
-  b.className = 'cat';
-  b.innerHTML = `<span class="ico">${cat.emoji}</span><span><b>${cat.title}</b><small>${cat.desc}</small></span><span class="arr">→</span>`;
-  b.onclick = () => showItems(cat);
-  catsEl.appendChild(b);
-});
-
-function showCats() {
-  category = null; picked = null;
-  cSmall.textContent = HEAD.small;
-  cTitle.textContent = HEAD.title;
-  cText.textContent = HEAD.text;
-  catsEl.hidden = false; subEl.hidden = true; backBtn.hidden = true;
-  animate(catsEl);
-}
-
-// Cat item
-function showItems(cat) {
-  category = cat; picked = null;
-  const direct = !!cat.direct;
-  cSmall.textContent = direct ? 'Your wish' : 'Birthday Craving';
-  cTitle.textContent = cat.title;
-  cText.textContent = cat.desc;
-  chipsEl.innerHTML = '';
-  chipsEl.hidden = direct;
+function resetWish() {
   customEl.value = '';
-  customEl.hidden = !direct;
-  customEl.placeholder = cat.placeholder || 'Write what you want...';
-  customEl.style.marginTop = direct ? '1.4rem' : '';
   sendBtn.disabled = true;
-  hint.textContent = direct ? 'Write what you want.' : 'Pick what you want.';
-
-  if (direct) picked = { emoji: cat.emoji, label: '', custom: true };
-
-  cat.items.forEach(item => {
-    const chip = document.createElement('button');
-    chip.className = 'chip';
-    chip.setAttribute('aria-pressed', 'false');
-    chip.innerHTML = `<span>${item.emoji}</span>${item.label}`;
-    chip.onclick = () => {
-      chipsEl.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', 'false'));
-      chip.setAttribute('aria-pressed', 'true');
-      picked = item;
-      customEl.hidden = !item.custom;
-      if (item.custom) { customEl.focus(); }
-      updateSend();
-    };
-    chipsEl.appendChild(chip);
-  });
-
-  catsEl.hidden = true; subEl.hidden = false; backBtn.hidden = false;
-  animate(subEl);
+  hint.textContent = HINT_DEFAULT;
 }
-
-function chosenText() {
-  if (!picked) return '';
-  return picked.custom ? customEl.value.trim() : picked.label;
-}
+const chosenText = () => customEl.value.trim();
 function updateSend() {
   const t = chosenText();
   sendBtn.disabled = !t;
-  hint.textContent = t ? 'You picked ' + t
-    : (picked && picked.custom ? 'Write what you want.' : 'Please select.');
+  hint.textContent = t ? 'You wrote: ' + t : HINT_DEFAULT;
 }
 customEl.addEventListener('input', updateSend);
-backBtn.onclick = showCats;
+customEl.addEventListener('keydown', e => { if (e.key === 'Enter' && !sendBtn.disabled) sendBtn.click(); });
 
 // Notification
 async function notify(text) {
@@ -181,17 +116,72 @@ async function notify(text) {
 
 sendBtn.onclick = async () => {
   const t = chosenText();
-  if (!category || !t || sendBtn.disabled) return;
-  const emoji = picked.emoji;
+  if (!t || sendBtn.disabled) return;
   sendBtn.disabled = true;
   hint.textContent = 'Sending...';
-  const ok = await notify(`🎂 ${RECIPIENT} Choose ${t} ${emoji} (${category.title})`);
+  const ok = await notify(`🎂 ${RECIPIENT} wants: ${t}`);
   if (!ok) {
     hint.textContent = 'Oops, it failed to send. Please try again.';
     sendBtn.disabled = !chosenText();
     return;
   }
-  document.getElementById('thanksWish').textContent = `${emoji} ${t}`;
+  document.getElementById('thanksWish').textContent = `🎁 ${t}`;
   hide(crav);
   show(thanks);
 };
+
+// Cinematic intro 
+const photos = (typeof PHOTOS !== 'undefined' && Array.isArray(PHOTOS)) ? PHOTOS.filter(p => p && p.src) : [];
+
+function buildPhotos() {
+  if (!photos.length) return [];
+  const wrap = document.getElementById('polaroids');
+  const made = ['p1', 'p2', 'p3'].map((cls, i) => {
+    const p = photos[i] || photos[0];
+    const f = document.createElement('figure');
+    f.className = 'polaroid ' + cls;
+    const img = new Image();
+    img.decoding = 'async'; img.alt = '';
+    img.onerror = () => { console.error('[foto] GAGAL load:', img.src, '→ cek path/nama/huruf besar-kecil'); f.remove(); };
+    img.onload  = () => console.log('[foto] OK:', img.src);
+    img.src = p.src;   // preload 
+    f.appendChild(img);
+    if (p.caption) { const c = document.createElement('figcaption'); c.textContent = p.caption; f.appendChild(c); }
+    wrap.appendChild(f);
+    return f;
+  });
+  const mp = photos[3] || photos[0];
+  const mf = document.getElementById('modalPhoto');
+  const mi = mf.querySelector('img');
+  mi.onerror = () => { console.error('[foto modal] GAGAL load:', mi.src); mf.hidden = true; };
+  mi.src = mp.src;
+  mf.hidden = false;
+  return made;
+}
+
+async function intro() {
+  const q = s => document.querySelector(s);
+  const reveal = el => el.classList.add('in');
+  const polaroids = buildPhotos();
+  const title = q('#title');
+
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.rv').forEach(reveal);
+    title.classList.add('go');
+    polaroids.forEach(reveal);
+    return runAge();
+  }
+
+  await wait(500);  reveal(q('.top'));                  // label
+  await wait(1000); reveal(q('.for'));                  // For Recipent
+  await wait(1000); title.classList.add('go');          // Happy Birthday.
+  await wait(delay * 1000 + 1200);
+  reveal(q('.age'));                                    // Age
+  await wait(1100);
+  await runAge();
+  await wait(700);  reveal(q('.lead'));                 // Paragraph
+  await wait(2600); reveal(q('#open')); reveal(q('.bottom'));   // Button + footer
+  setTimeout(() => q('#open').classList.remove('rv', 'in'), 1300); 
+  await wait(900);  polaroids.forEach(reveal);        
+}
+intro();
