@@ -2,7 +2,7 @@ document.title = `Happy Birthday, ${RECIPIENT}`;
 document.querySelectorAll('[data-name]').forEach(el => el.textContent = RECIPIENT);
 document.querySelectorAll('[data-from]').forEach(el => el.textContent = SENDER);
 
-// Age counter: 0 → AGE, "+1" tampil selama hitung, lalu berubah jadi pesan akhir
+// Age counter
 const ageEl = document.querySelector('[data-age-count]');
 const ageBox = ageEl.parentElement;
 const agePlus = document.querySelector('.age-plus');
@@ -18,11 +18,10 @@ async function runAge() {
     return;
   }
 
-  await wait(1600);                    // tunggu .age muncul
-  agePlus.classList.add('show');       // "+1" muncul
+  await wait(1600);                    
+  agePlus.classList.add('show');   
   await wait(450);
 
-  // hitung naik dengan easing (cepat di awal, melambat di akhir)
   const dur = Math.min(3600, 1400 + AGE * 50);
   let last = 0;
   await new Promise(resolve => {
@@ -43,11 +42,11 @@ async function runAge() {
     requestAnimationFrame(step);
   });
 
-  ageBox.classList.add('done');        // angka jadi caramel italic
+  ageBox.classList.add('done');      
   await wait(500);
-  agePlus.classList.remove('show');    // "+1" memudar
+  agePlus.classList.remove('show');   
   await wait(380);
-  agePlus.textContent = FINAL_TEXT;    // ganti teks, lalu muncul lagi (tidak berulang)
+  agePlus.textContent = FINAL_TEXT;  
   agePlus.classList.add('done');
   agePlus.classList.add('show');
 }
